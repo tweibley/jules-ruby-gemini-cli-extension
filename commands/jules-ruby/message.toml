@@ -1,4 +1,4 @@
-description = "Send a message to a session (e.g., /jules:message SESSION_ID add unit tests)"
+description = "Send a message to a session (e.g., /jules-ruby:message SESSION_ID add unit tests)"
 prompt = """Send a message to jules session '{{args | split: " " | first}}':
 Message: {{args | split: " " | slice: 1, 100 | join: " "}}
 

@@ -4,4 +4,4 @@ Use the jules_approve_plan tool with session_id='{{args}}'.
 
 This approves jules to proceed with implementing the proposed plan.
 After approval, jules will start working and the session state will change to IN_PROGRESS.
-Monitor progress with /jules:activities {{args}}."""
+Monitor progress with /jules-ruby:activities {{args}}."""

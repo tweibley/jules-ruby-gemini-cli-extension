@@ -34,13 +34,13 @@ Use these MCP tools to interact with Jules:
 
 ## Commands
 
-- `/jules:sources` - List connected repositories
-- `/jules:sessions` - List all sessions
-- `/jules:session SESSION_ID` - Show session details
-- `/jules:create OWNER/REPO BRANCH prompt` - Create a new session
-- `/jules:approve SESSION_ID` - Approve a plan
-- `/jules:message SESSION_ID message` - Send a message
-- `/jules:activities SESSION_ID` - View session activities
+- `/jules-ruby:sources` - List connected repositories
+- `/jules-ruby:sessions` - List all sessions
+- `/jules-ruby:session SESSION_ID` - Show session details
+- `/jules-ruby:create OWNER/REPO BRANCH prompt` - Create a new session
+- `/jules-ruby:approve SESSION_ID` - Approve a plan
+- `/jules-ruby:message SESSION_ID message` - Send a message
+- `/jules-ruby:activities SESSION_ID` - View session activities
 
 ## When to Use
 

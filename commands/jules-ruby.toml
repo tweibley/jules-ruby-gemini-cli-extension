@@ -27,7 +27,7 @@ When the user wants to create a new coding task, follow these steps:
 3.  **Respond to User:**
     *   Inform the user that the jules session has been created.
     *   Provide the session ID for tracking.
-    *   Explain they can check status with `/jules:session <ID>` or `/jules:activities <ID>`.
+    *   Explain they can check status with `/jules-ruby:session <ID>` or `/jules-ruby:activities <ID>`.
 
 ---
 

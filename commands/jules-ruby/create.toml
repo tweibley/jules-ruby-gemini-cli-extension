@@ -1,4 +1,4 @@
-description = "Create a new jules session (e.g., /jules:create owner/repo main fix the login bug)"
+description = "Create a new jules session (e.g., /jules-ruby:create owner/repo main fix the login bug)"
 prompt = """Create a new jules session with:
 - Source: sources/github/{{args | split: " " | first}}
 - Branch: {{args | split: " " | slice: 1, 1 | first}}
@@ -8,6 +8,6 @@ Use the jules_create_session tool with these parameters.
 
 After creation:
 1. jules will analyze the codebase and create a plan
-2. Check status with /jules:session <ID> or /jules:activities <ID>
-3. When plan is ready (AWAITING_PLAN_APPROVAL), approve with /jules:approve <ID>
+2. Check status with /jules-ruby:session <ID> or /jules-ruby:activities <ID>
+3. When plan is ready (AWAITING_PLAN_APPROVAL), approve with /jules-ruby:approve <ID>
 4. jules will implement the changes and create a PR"""

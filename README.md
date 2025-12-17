@@ -32,47 +32,47 @@ gemini extensions link .
 /jules
 
 # Or check pending approvals
-/jules:pending
+/jules-ruby:pending
 ```
 
 ## Available Commands
 
 | Command | Description |
 |---------|-------------|
-| `/jules` | Main workflow guide with instructions |
-| `/jules:sources` | List connected GitHub repositories |
-| `/jules:sessions` | List all sessions with state explanations |
-| `/jules:session ID` | Show session details |
-| `/jules:create REPO BRANCH prompt` | Create a new session |
-| `/jules:approve ID` | Approve a session's plan |
-| `/jules:message ID message` | Send a message to a session |
-| `/jules:activities ID` | List activities for a session |
-| `/jules:pending` | Find all sessions awaiting approval |
-| `/jules:status` | Summary of all active sessions |
+| `/jules-ruby` | Main workflow guide with instructions |
+| `/jules-ruby:sources` | List connected GitHub repositories |
+| `/jules-ruby:sessions` | List all sessions with state explanations |
+| `/jules-ruby:session ID` | Show session details |
+| `/jules-ruby:create REPO BRANCH prompt` | Create a new session |
+| `/jules-ruby:approve ID` | Approve a session's plan |
+| `/jules-ruby:message ID message` | Send a message to a session |
+| `/jules-ruby:activities ID` | List activities for a session |
+| `/jules-ruby:pending` | Find all sessions awaiting approval |
+| `/jules-ruby:status` | Summary of all active sessions |
 
 ## Common Workflows
 
 ### Create a Coding Task
 ```
-/jules:create owner/repo main fix the login bug
+/jules-ruby:create owner/repo main fix the login bug
 ```
 
 ### Check What Needs Approval
 ```
-/jules:pending
+/jules-ruby:pending
 ```
 
 ### View All Active Work
 ```
-/jules:status
+/jules-ruby:status
 ```
 
 ### Full Task Lifecycle
-1. `/jules:sources` - Find your repo
-2. `/jules:create owner/repo main your task description`
-3. `/jules:pending` - Wait for plan, then check pending
-4. `/jules:approve ID` - Approve the plan
-5. `/jules:activities ID` - Monitor progress
+1. `/jules-ruby:sources` - Find your repo
+2. `/jules-ruby:create owner/repo main your task description`
+3. `/jules-ruby:pending` - Wait for plan, then check pending
+4. `/jules-ruby:approve ID` - Approve the plan
+5. `/jules-ruby:activities ID` - Monitor progress
 6. jules creates a PR when done!
 
 ## MCP Tools
@@ -101,9 +101,9 @@ All MCP tools return **structured JSON output** for easy parsing.
 |-------|-------------|--------|
 | `QUEUED` | Waiting to start | Wait |
 | `PLANNING` | Creating a plan | Wait |
-| `AWAITING_PLAN_APPROVAL` | Plan ready | `/jules:approve ID` |
-| `AWAITING_USER_FEEDBACK` | Needs input | `/jules:message ID msg` |
-| `IN_PROGRESS` | Working | `/jules:activities ID` |
+| `AWAITING_PLAN_APPROVAL` | Plan ready | `/jules-ruby:approve ID` |
+| `AWAITING_USER_FEEDBACK` | Needs input | `/jules-ruby:message ID msg` |
+| `IN_PROGRESS` | Working | `/jules-ruby:activities ID` |
 | `COMPLETED` | Done! | Check GitHub for PR |
 | `FAILED` | Error occurred | Check activities for reason |
 

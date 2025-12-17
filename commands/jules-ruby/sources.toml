@@ -5,4 +5,4 @@ Use the jules_list_sources tool.
 Sources are GitHub repositories connected to jules. The source name format is:
 `sources/github/owner/repo`
 
-After listing, if the user wants to create a task, they can use `/jules:create`."""
+After listing, if the user wants to create a task, they can use `/jules-ruby:create`."""
