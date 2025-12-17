@@ -1,0 +1,7 @@
+description = "Approve a session's plan (use when state is AWAITING_PLAN_APPROVAL)"
+prompt = """Approve the plan for jules session '{{args}}'.
+Use the jules_approve_plan tool with session_id='{{args}}'.
+
+This approves jules to proceed with implementing the proposed plan.
+After approval, jules will start working and the session state will change to IN_PROGRESS.
+Monitor progress with /jules:activities {{args}}."""

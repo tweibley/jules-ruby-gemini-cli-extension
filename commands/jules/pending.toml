@@ -1,0 +1,17 @@
+description = "Find all sessions waiting for plan approval and show a summary"
+prompt = """Find all jules sessions that need plan approval.
+
+1. Use jules_list_sessions to get all sessions
+2. Filter for sessions with state AWAITING_PLAN_APPROVAL
+3. For each one, summarize:
+   - Session ID
+   - Title (if available)
+   - Repository/source
+   - When it was created
+
+If there are sessions awaiting approval, ask if the user wants to:
+- View details of a specific session (/jules:session ID)
+- Approve a plan (/jules:approve ID)
+- View the plan's activities (/jules:activities ID)
+
+If no sessions need approval, let the user know."""

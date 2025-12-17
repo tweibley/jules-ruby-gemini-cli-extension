@@ -1,0 +1,10 @@
+description = "Send a message to a session (e.g., /jules:message SESSION_ID add unit tests)"
+prompt = """Send a message to jules session '{{args | split: " " | first}}':
+Message: {{args | split: " " | slice: 1, 100 | join: " "}}
+
+Use the jules_send_message tool with:
+- session_id: {{args | split: " " | first}}
+- prompt: {{args | split: " " | slice: 1, 100 | join: " "}}
+
+Use this to provide additional instructions or clarification to jules.
+Examples: "Also add unit tests", "Use TypeScript instead", "Focus on the login module first"."""
