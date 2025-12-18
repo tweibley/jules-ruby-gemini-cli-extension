@@ -34,12 +34,17 @@ export async function execJules(
         let stdout = '';
         let stderr = '';
 
+        // Optimization: Set encoding to 'utf8' to handle multi-byte characters correctly
+        // and improve performance by avoiding manual string conversion of buffers.
+        child.stdout.setEncoding('utf8');
+        child.stderr.setEncoding('utf8');
+
         child.stdout.on('data', (data) => {
-            stdout += data.toString();
+            stdout += data;
         });
 
         child.stderr.on('data', (data) => {
-            stderr += data.toString();
+            stderr += data;
         });
 
         child.on('close', (code) => {
