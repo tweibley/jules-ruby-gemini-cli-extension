@@ -57,6 +57,39 @@ export async function execJules(
 }
 
 /**
+ * Helper to format error messages for MCP
+ */
+function formatErrorResponse(error: any): { content: Array<{ type: 'text'; text: string }> } {
+    if (error.code === 'ENOENT') {
+        return {
+            content: [{
+                type: 'text',
+                text: "Configuration Error: The 'jules-ruby' CLI was not found. Please ensure it is installed and available in your PATH."
+            }]
+        };
+    }
+
+    return {
+        content: [{
+            type: 'text',
+            text: `Failed to execute jules-ruby command: ${error.message || error}`
+        }]
+    };
+}
+
+/**
+ * Helper to format non-zero exit code responses
+ */
+function formatExitCodeResponse(result: CliResult): { content: Array<{ type: 'text'; text: string }> } {
+    return {
+        content: [{
+            type: 'text',
+            text: `The command failed with exit code ${result.exitCode}.\n\nError details:\n${result.stderr || result.stdout}`
+        }]
+    };
+}
+
+/**
  * Execute jules-ruby command and return formatted result for MCP (text output)
  */
 export async function execJulesForMcp(
@@ -67,12 +100,7 @@ export async function execJulesForMcp(
         const result = await execJules(args, options);
 
         if (result.exitCode !== 0) {
-            return {
-                content: [{
-                    type: 'text',
-                    text: `Error (exit code ${result.exitCode}):\n${result.stderr || result.stdout}`
-                }]
-            };
+            return formatExitCodeResponse(result);
         }
 
         return {
@@ -82,12 +110,7 @@ export async function execJulesForMcp(
             }]
         };
     } catch (error) {
-        return {
-            content: [{
-                type: 'text',
-                text: `Failed to execute jules-ruby command: ${error}`
-            }]
-        };
+        return formatErrorResponse(error);
     }
 }
 
@@ -113,12 +136,7 @@ export async function execJulesJsonForMcp(
                     }]
                 };
             } catch {
-                return {
-                    content: [{
-                        type: 'text',
-                        text: `Error (exit code ${result.exitCode}):\n${result.stderr || result.stdout}`
-                    }]
-                };
+                return formatExitCodeResponse(result);
             }
         }
 
@@ -141,11 +159,6 @@ export async function execJulesJsonForMcp(
             };
         }
     } catch (error) {
-        return {
-            content: [{
-                type: 'text',
-                text: `Failed to execute jules-ruby command: ${error}`
-            }]
-        };
+        return formatErrorResponse(error);
     }
 }
