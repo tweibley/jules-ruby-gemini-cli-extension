@@ -10,6 +10,14 @@ A Gemini CLI extension that exposes the [jules-ruby](https://github.com/tweibley
 
 ## Installation
 
+### Quick Install (Recommended)
+
+```bash
+gemini extensions install https://github.com/tweibley/jules-ruby-gemini-cli-extension
+```
+
+### Manual Install (Development)
+
 ```bash
 # Clone the extension
 git clone https://github.com/tweibley/jules-ruby-gemini-cli-extension.git
