@@ -14,4 +14,4 @@ If there are sessions awaiting approval, ask if the user wants to:
 - Approve a plan (/jules-ruby:approve ID)
 - View the plan's activities (/jules-ruby:activities ID)
 
-If no sessions need approval, let the user know."""
+If no sessions need approval, let the user know and suggest they can create a new task with /jules-ruby:create or view all sessions with /jules-ruby:status."""
