@@ -17,9 +17,9 @@ export interface CliResult {
  */
 export async function execJules(
     args: string[],
-    options: { cwd?: string; useJson?: boolean } = {}
+    options: { cwd?: string; useJson?: boolean; timeout?: number } = {}
 ): Promise<CliResult> {
-    const { cwd, useJson = false } = options;
+    const { cwd, useJson = false, timeout = 0 } = options;
 
     // Build args with optional json format
     let finalArgs = [...args];
@@ -46,6 +46,18 @@ export async function execJules(
 
         let stdout = '';
         let stderr = '';
+
+        // Timeout handling
+        if (timeout > 0) {
+            const timer = setTimeout(() => {
+                child.kill(); // Default is SIGTERM
+                reject(new Error(`Command timed out after ${timeout}ms`));
+            }, timeout);
+
+            // Clear timeout if process finishes or errors
+            child.on('close', () => clearTimeout(timer));
+            child.on('error', () => clearTimeout(timer));
+        }
 
         // Optimization: Set encoding to 'utf8' to handle multi-byte characters correctly
         // and improve performance by avoiding manual string conversion of buffers.
