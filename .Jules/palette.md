@@ -1,3 +1,3 @@
-## 2025-12-18 - Improved Error Clarity for MCP Tools
-**Learning:** AI agents rely heavily on error messages to self-correct. Generic "exit code 1" errors provide no context for recovery.
-**Action:** When wrapping CLI tools for AI consumption, parse common error codes (like ENOENT) into actionable instructions (e.g., "Install the tool").
+## 2025-12-19 - Empty States in Text UI
+**Learning:** Even in text-based interfaces (like LLM prompts), empty states are a key UX opportunity. A simple "Nothing found" dead-ends the user.
+**Action:** Always provide actionable next steps in empty states (e.g., "Nothing found. Try running X to create one.").
