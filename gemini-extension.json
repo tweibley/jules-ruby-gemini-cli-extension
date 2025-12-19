@@ -1,9 +1,9 @@
 {
   "name": "jules-ruby",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "contextFileName": "GEMINI.md",
   "mcpServers": {
-    "julesServer": {
+    "julesRubyServer": {
       "command": "node",
       "args": [
         "${extensionPath}${/}mcp-server${/}dist${/}jules.js"
