@@ -7,11 +7,14 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
 import { execJulesForMcp, execJulesJsonForMcp } from './cli.js';
+import { SimpleCache } from './cache.js';
 
 const server = new McpServer({
     name: 'jules-ruby-server',
     version: '1.0.0',
 });
+
+const cache = new SimpleCache<{ content: Array<{ type: 'text'; text: string }> }>();
 
 // ============================================================================
 // Source Management Tools
@@ -23,7 +26,24 @@ server.registerTool(
         description: 'List all connected GitHub repositories (sources) for Jules',
         inputSchema: z.object({}).shape,
     },
-    async () => execJulesJsonForMcp(['sources', 'list'])
+    async () => {
+        const cacheKey = 'sources_list';
+        const cached = cache.get(cacheKey);
+        if (cached) {
+            return cached;
+        }
+
+        const result = await execJulesJsonForMcp(['sources', 'list']);
+
+        // Cache successful results for 60 seconds
+        // We check if the result content indicates an error message before caching
+        const isError = result.content[0]?.text?.includes('Error') || false;
+        if (!isError) {
+            cache.set(cacheKey, result, 60);
+        }
+
+        return result;
+    }
 );
 
 server.registerTool(
