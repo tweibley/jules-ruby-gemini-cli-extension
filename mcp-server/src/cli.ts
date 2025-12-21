@@ -26,6 +26,10 @@ export async function execJules(
     if (useJson) finalArgs.push('--format=json');
 
     return new Promise((resolve, reject) => {
+        if (!process.env.JULES_API_KEY) {
+            return reject(new Error("Configuration Error: `JULES_API_KEY` is not set. Please set this environment variable to your Jules API key."));
+        }
+
         // Only pass necessary environment variables to the child process
         // to avoid leaking sensitive secrets that jules-ruby doesn't need.
         // Also ensure we don't pass undefined values which would cause spawn to crash.
