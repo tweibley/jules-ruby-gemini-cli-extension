@@ -2,3 +2,8 @@
 **Vulnerability:** The MCP server passed unsanitized user inputs to a CLI tool (`jules-ruby`) and leaked all environment variables to the child process.
 **Learning:** Even when using `spawn` to avoid shell injection, argument injection is possible if user inputs can be interpreted as flags (starting with `-`). Also, passing full `process.env` violates least privilege.
 **Prevention:** Validate inputs to ensure they don't start with `-` when used as command arguments. Use an explicit allowlist for environment variables passed to child processes.
+
+## 2025-01-22 - Unbounded Child Process Execution
+**Vulnerability:** The `spawn` command was used without a timeout, allowing child processes to potentially hang indefinitely and consume system resources (DoS).
+**Learning:** Node.js `spawn` does not have a default timeout. Relying on external tools to be well-behaved is risky.
+**Prevention:** Explicitly pass a `timeout` option to `spawn` or implement a timeout wrapper to kill long-running processes. Added a 30s default timeout.
