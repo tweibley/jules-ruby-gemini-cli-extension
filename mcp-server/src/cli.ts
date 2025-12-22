@@ -87,6 +87,15 @@ function formatErrorResponse(error: any): { content: Array<{ type: 'text'; text:
         };
     }
 
+    if (error.code === 'EACCES') {
+        return {
+            content: [{
+                type: 'text',
+                text: "Permission Error: The 'jules-ruby' CLI is not executable. Please check file permissions."
+            }]
+        };
+    }
+
     return {
         content: [{
             type: 'text',
