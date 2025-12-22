@@ -17,9 +17,9 @@ export interface CliResult {
  */
 export async function execJules(
     args: string[],
-    options: { cwd?: string; useJson?: boolean } = {}
+    options: { cwd?: string; useJson?: boolean; timeout?: number; _command?: string } = {}
 ): Promise<CliResult> {
-    const { cwd, useJson = false } = options;
+    const { cwd, useJson = false, timeout = 30000, _command = 'jules-ruby' } = options;
 
     // Build args with optional json format
     let finalArgs = [...args];
@@ -39,9 +39,10 @@ export async function execJules(
             }
         }
 
-        const child = spawn('jules-ruby', finalArgs, {
+        const child = spawn(_command, finalArgs, {
             cwd,
-            env
+            env,
+            timeout
         });
 
         let stdout = '';
@@ -60,7 +61,13 @@ export async function execJules(
             stderr += data;
         });
 
-        child.on('close', (code) => {
+        child.on('close', (code, signal) => {
+            // If the process was killed by a signal (likely due to timeout), reject appropriately
+            if (signal) {
+                reject(new Error(`Command timed out or was killed by signal ${signal} (timeout: ${timeout}ms)`));
+                return;
+            }
+
             resolve({
                 stdout: stdout.trim(),
                 stderr: stderr.trim(),
@@ -69,6 +76,7 @@ export async function execJules(
         });
 
         child.on('error', (err) => {
+            // Handle timeout error specifically if needed, but spawn usually handles it via signal or error
             reject(err);
         });
     });
