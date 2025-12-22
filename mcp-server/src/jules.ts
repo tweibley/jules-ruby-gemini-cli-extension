@@ -7,11 +7,16 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
 import { execJulesForMcp, execJulesJsonForMcp } from './cli.js';
+import { SimpleCache } from './cache.js';
 
 const server = new McpServer({
     name: 'jules-ruby-server',
     version: '1.0.0',
 });
+
+// Cache for list sources command (TTL: 60 seconds)
+// This command can be slow as it might fetch from GitHub, and the list of sources changes infrequently.
+const sourcesCache = new SimpleCache<any>(60 * 1000);
 
 // ============================================================================
 // Source Management Tools
@@ -23,7 +28,11 @@ server.registerTool(
         description: 'List all connected GitHub repositories (sources) for Jules',
         inputSchema: z.object({}).shape,
     },
-    async () => execJulesJsonForMcp(['sources', 'list'])
+    async () => {
+        return sourcesCache.getOrSet('list_sources', async () => {
+            return execJulesJsonForMcp(['sources', 'list']);
+        });
+    }
 );
 
 server.registerTool(
