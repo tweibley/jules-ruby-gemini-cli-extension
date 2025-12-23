@@ -1,3 +1,3 @@
-## 2025-12-18 - Improved Error Clarity for MCP Tools
-**Learning:** AI agents rely heavily on error messages to self-correct. Generic "exit code 1" errors provide no context for recovery.
-**Action:** When wrapping CLI tools for AI consumption, parse common error codes (like ENOENT) into actionable instructions (e.g., "Install the tool").
+## 2024-05-23 - Visual Status Indicators
+**Learning:** Adding emojis (🟢, 🟠, 🔴) to LLM prompts for status lists significantly improves scannability without changing underlying logic. The LLM reliably follows these formatting instructions.
+**Action:** Use consistent emoji/symbol sets in TOML prompts for any list-based output to create a "dashboard" feel in text interfaces.
