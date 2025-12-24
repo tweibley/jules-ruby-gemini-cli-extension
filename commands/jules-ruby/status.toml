@@ -9,13 +9,13 @@ prompt = """Show a summary of all active jules sessions.
    - AWAITING_USER_FEEDBACK
    - IN_PROGRESS
 
-3. Group and summarize by state:
-   - How many are awaiting approval (offer to approve)
-   - How many are in progress (no action needed)
-   - How many need feedback (offer to send message)
+3. Group and summarize by state using these visual indicators:
+   - 🟠 Awaiting Action (AWAITING_PLAN_APPROVAL, AWAITING_USER_FEEDBACK)
+   - 🟢 Active (IN_PROGRESS)
+   - ⚪ Pending (QUEUED, PLANNING)
 
 4. For each active session, show:
    - Session ID
    - Title
-   - Current state
+   - Current state (with emoji)
    - Suggested next action"""
