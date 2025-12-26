@@ -57,6 +57,7 @@ gemini extensions link .
 | `/jules-ruby:activities ID` | List activities for a session |
 | `/jules-ruby:pending` | Find all sessions awaiting approval |
 | `/jules-ruby:status` | Summary of all active sessions |
+| `/jules-ruby:examples` | Show creative and fun examples |
 
 ## Common Workflows
 
