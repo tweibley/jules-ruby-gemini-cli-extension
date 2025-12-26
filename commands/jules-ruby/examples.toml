@@ -1,0 +1,26 @@
+description = "Show fun, thrilling, and creative examples of what jules can do"
+prompt = """
+Here are some fun examples to try with jules. Just copy and paste!
+
+---
+
+### **Example 1: Create a Retro Snake Game**
+*Create a classic snake game that runs in the browser.*
+
+`/jules-ruby:create tweibley/jules-ruby-gemini-cli-extension main "Create a retro snake game in a single HTML file with CSS and Javascript. The game should be playable and have a score counter."`
+
+---
+
+### **Example 2: Refactor for Performance**
+*Analyze and refactor a section of code for better performance.*
+
+`/jules-ruby:create tweibley/jules-ruby-gemini-cli-extension main "Analyze the mcp-server/src/cli.ts file for performance bottlenecks and refactor it to be more efficient. Add comments explaining the changes."`
+
+---
+
+### **Example 3: Add a New Command (Meta!)**
+*Have jules add a new command to its own CLI.*
+
+`/jules-ruby:create tweibley/jules-ruby-gemini-cli-extension main "Add a new command /jules-ruby:hello that prints 'Hello, world!' to the console. This will require creating a new toml file in the commands/jules-ruby directory and updating the main jules-ruby.toml file."`
+
+"""
