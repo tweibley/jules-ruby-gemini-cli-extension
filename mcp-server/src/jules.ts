@@ -13,6 +13,32 @@ const server = new McpServer({
     version: '1.0.0',
 });
 
+// Common validation schemas
+const sessionIdSchema = z.string()
+    .trim()
+    .max(100)
+    .regex(/^(sessions\/)?\d+$/, "Session ID must be numeric or 'sessions/' followed by numbers")
+    .describe('Session ID (e.g., 12345678 or sessions/12345678)');
+
+const sourceSchema = z.string()
+    .trim()
+    .max(200)
+    .regex(/^sources\/github\/[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$/, "Source must match format 'sources/github/owner/repo'")
+    .describe('Source name (e.g., sources/github/owner/repo)');
+
+const branchSchema = z.string()
+    .trim()
+    .max(100)
+    .regex(/^[a-zA-Z0-9_./-]+$/, "Branch name can only contain alphanumeric characters, -, _, ., and /")
+    .refine(val => !val.startsWith('-'), { message: "Branch name cannot start with '-'" })
+    .describe('Starting branch name (e.g., main)');
+
+const activityNameSchema = z.string()
+    .trim()
+    .max(200)
+    .regex(/^sessions\/\d+\/activities\/\d+$/, "Activity name must match format 'sessions/<id>/activities/<id>'")
+    .describe('Activity name (e.g., sessions/123/activities/456)');
+
 // ============================================================================
 // Source Management Tools
 // ============================================================================
@@ -31,7 +57,7 @@ server.registerTool(
     {
         description: 'Show details of a specific source (GitHub repository)',
         inputSchema: z.object({
-            name: z.string().refine(val => !val.startsWith('-'), { message: "Source name cannot start with '-'" }).describe('Source name (e.g., sources/github/owner/repo)'),
+            name: sourceSchema,
         }).shape,
     },
     async ({ name }) => execJulesForMcp(['sources', 'show', name])
@@ -55,7 +81,7 @@ server.registerTool(
     {
         description: 'Show details of a specific Jules session',
         inputSchema: z.object({
-            session_id: z.string().refine(val => !val.startsWith('-'), { message: "Session ID cannot start with '-'" }).describe('Session ID (e.g., 12345678 or sessions/12345678)'),
+            session_id: sessionIdSchema,
         }).shape,
     },
     async ({ session_id }) => execJulesForMcp(['sessions', 'show', session_id])
@@ -66,10 +92,10 @@ server.registerTool(
     {
         description: 'Create a new Jules coding session to work on a task',
         inputSchema: z.object({
-            source: z.string().refine(val => !val.startsWith('-'), { message: "Source name cannot start with '-'" }).describe('Source name (e.g., sources/github/owner/repo)'),
-            branch: z.string().refine(val => !val.startsWith('-'), { message: "Branch name cannot start with '-'" }).describe('Starting branch name (e.g., main)'),
-            prompt: z.string().refine(val => !val.startsWith('-'), { message: "Prompt cannot start with '-'" }).describe('Task description for Jules to work on'),
-            title: z.string().optional().refine(val => !val || !val.startsWith('-'), { message: "Title cannot start with '-'" }).describe('Optional title for the session'),
+            source: sourceSchema,
+            branch: branchSchema,
+            prompt: z.string().trim().max(10000).refine(val => !val.startsWith('-'), { message: "Prompt cannot start with '-'" }).describe('Task description for Jules to work on'),
+            title: z.string().trim().max(200).optional().refine(val => !val || !val.startsWith('-'), { message: "Title cannot start with '-'" }).describe('Optional title for the session'),
             auto_pr: z.boolean().optional().describe('Automatically create a PR when done'),
         }).shape,
     },
@@ -86,7 +112,7 @@ server.registerTool(
     {
         description: 'Approve a session plan that is awaiting approval',
         inputSchema: z.object({
-            session_id: z.string().refine(val => !val.startsWith('-'), { message: "Session ID cannot start with '-'" }).describe('Session ID to approve'),
+            session_id: sessionIdSchema,
         }).shape,
     },
     async ({ session_id }) => execJulesForMcp(['sessions', 'approve', session_id])
@@ -97,8 +123,8 @@ server.registerTool(
     {
         description: 'Send a message to an active Jules session',
         inputSchema: z.object({
-            session_id: z.string().refine(val => !val.startsWith('-'), { message: "Session ID cannot start with '-'" }).describe('Session ID to send message to'),
-            prompt: z.string().refine(val => !val.startsWith('-'), { message: "Message prompt cannot start with '-'" }).describe('Message to send to Jules'),
+            session_id: sessionIdSchema,
+            prompt: z.string().trim().max(10000).refine(val => !val.startsWith('-'), { message: "Message prompt cannot start with '-'" }).describe('Message to send to Jules'),
         }).shape,
     },
     async ({ session_id, prompt }) =>
@@ -110,7 +136,7 @@ server.registerTool(
     {
         description: 'Delete a Jules session',
         inputSchema: z.object({
-            session_id: z.string().refine(val => !val.startsWith('-'), { message: "Session ID cannot start with '-'" }).describe('Session ID to delete'),
+            session_id: sessionIdSchema,
         }).shape,
     },
     async ({ session_id }) => execJulesForMcp(['sessions', 'delete', session_id])
@@ -125,7 +151,7 @@ server.registerTool(
     {
         description: 'List activities (progress history) for a Jules session',
         inputSchema: z.object({
-            session_id: z.string().refine(val => !val.startsWith('-'), { message: "Session ID cannot start with '-'" }).describe('Session ID to list activities for'),
+            session_id: sessionIdSchema,
         }).shape,
     },
     async ({ session_id }) => execJulesJsonForMcp(['activities', 'list', session_id])
@@ -136,7 +162,7 @@ server.registerTool(
     {
         description: 'Show details of a specific activity',
         inputSchema: z.object({
-            activity_name: z.string().refine(val => !val.startsWith('-'), { message: "Activity name cannot start with '-'" }).describe('Activity name (e.g., sessions/123/activities/456)'),
+            activity_name: activityNameSchema,
         }).shape,
     },
     async ({ activity_name }) => execJulesForMcp(['activities', 'show', activity_name])
