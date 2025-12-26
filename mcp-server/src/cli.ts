@@ -10,6 +10,9 @@ export interface CliResult {
     exitCode: number;
 }
 
+// Optimization: Define allowed keys at module scope to avoid re-allocation on every call.
+const ALLOWED_ENV_KEYS = ['JULES_API_KEY', 'PATH', 'HOME', 'SSH_AUTH_SOCK', 'LANG', 'LC_ALL'];
+
 /**
  * Execute a jules-ruby CLI command
  * @param args - Arguments to pass to the jules-ruby command
@@ -29,10 +32,9 @@ export async function execJules(
         // Only pass necessary environment variables to the child process
         // to avoid leaking sensitive secrets that jules-ruby doesn't need.
         // Also ensure we don't pass undefined values which would cause spawn to crash.
-        const allowedKeys = ['JULES_API_KEY', 'PATH', 'HOME', 'SSH_AUTH_SOCK', 'LANG', 'LC_ALL'];
         const env: NodeJS.ProcessEnv = {};
 
-        for (const key of allowedKeys) {
+        for (const key of ALLOWED_ENV_KEYS) {
             const value = process.env[key];
             if (value !== undefined) {
                 env[key] = value;
