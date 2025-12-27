@@ -4,6 +4,11 @@
 
 import { spawn } from 'child_process';
 
+// Only pass necessary environment variables to the child process
+// to avoid leaking sensitive secrets that jules-ruby doesn't need.
+// Also ensure we don't pass undefined values which would cause spawn to crash.
+const ALLOWED_ENV_KEYS = ['JULES_API_KEY', 'PATH', 'HOME', 'SSH_AUTH_SOCK', 'LANG', 'LC_ALL'];
+
 export interface CliResult {
     stdout: string;
     stderr: string;
@@ -26,13 +31,9 @@ export async function execJules(
     if (useJson) finalArgs.push('--format=json');
 
     return new Promise((resolve, reject) => {
-        // Only pass necessary environment variables to the child process
-        // to avoid leaking sensitive secrets that jules-ruby doesn't need.
-        // Also ensure we don't pass undefined values which would cause spawn to crash.
-        const allowedKeys = ['JULES_API_KEY', 'PATH', 'HOME', 'SSH_AUTH_SOCK', 'LANG', 'LC_ALL'];
         const env: NodeJS.ProcessEnv = {};
 
-        for (const key of allowedKeys) {
+        for (const key of ALLOWED_ENV_KEYS) {
             const value = process.env[key];
             if (value !== undefined) {
                 env[key] = value;
@@ -41,7 +42,9 @@ export async function execJules(
 
         const child = spawn('jules-ruby', finalArgs, {
             cwd,
-            env
+            env,
+            // Optimization: Ignore stdin to prevent creating an unused pipe
+            stdio: ['ignore', 'pipe', 'pipe']
         });
 
         let stdout = '';
