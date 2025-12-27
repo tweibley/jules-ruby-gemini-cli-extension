@@ -9,5 +9,5 @@ Use the jules_create_session tool with these parameters.
 After creation:
 1. jules will analyze the codebase and create a plan
 2. Check status with /jules-ruby:session <ID> or /jules-ruby:activities <ID>
-3. When plan is ready (AWAITING_PLAN_APPROVAL), approve with /jules-ruby:approve <ID>
+3. When plan is ready (🟡 AWAITING_PLAN_APPROVAL), approve with /jules-ruby:approve <ID>
 4. jules will implement the changes and create a PR"""
