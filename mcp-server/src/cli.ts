@@ -10,6 +10,9 @@ export interface CliResult {
     exitCode: number;
 }
 
+// Optimization: Define allowed keys at module scope to avoid reallocation on every call
+const ALLOWED_ENV_KEYS = ['JULES_API_KEY', 'PATH', 'HOME', 'SSH_AUTH_SOCK', 'LANG', 'LC_ALL'];
+
 /**
  * Execute a jules-ruby CLI command
  * @param args - Arguments to pass to the jules-ruby command
@@ -29,10 +32,9 @@ export async function execJules(
         // Only pass necessary environment variables to the child process
         // to avoid leaking sensitive secrets that jules-ruby doesn't need.
         // Also ensure we don't pass undefined values which would cause spawn to crash.
-        const allowedKeys = ['JULES_API_KEY', 'PATH', 'HOME', 'SSH_AUTH_SOCK', 'LANG', 'LC_ALL'];
         const env: NodeJS.ProcessEnv = {};
 
-        for (const key of allowedKeys) {
+        for (const key of ALLOWED_ENV_KEYS) {
             const value = process.env[key];
             if (value !== undefined) {
                 env[key] = value;
@@ -44,8 +46,10 @@ export async function execJules(
             env
         });
 
-        let stdout = '';
-        let stderr = '';
+        // Optimization: Use array of chunks for collecting output
+        // For large outputs, this is more memory efficient and slightly faster than string concatenation
+        const stdoutChunks: string[] = [];
+        const stderrChunks: string[] = [];
 
         // Optimization: Set encoding to 'utf8' to handle multi-byte characters correctly
         // and improve performance by avoiding manual string conversion of buffers.
@@ -53,17 +57,17 @@ export async function execJules(
         child.stderr.setEncoding('utf8');
 
         child.stdout.on('data', (data) => {
-            stdout += data;
+            stdoutChunks.push(data);
         });
 
         child.stderr.on('data', (data) => {
-            stderr += data;
+            stderrChunks.push(data);
         });
 
         child.on('close', (code) => {
             resolve({
-                stdout: stdout.trim(),
-                stderr: stderr.trim(),
+                stdout: stdoutChunks.join('').trim(),
+                stderr: stderrChunks.join('').trim(),
                 exitCode: code ?? 0
             });
         });
@@ -146,6 +150,8 @@ export async function execJulesJsonForMcp(
         if (result.exitCode !== 0) {
             // Try to parse error as JSON first
             try {
+                // Optimization: Validate it is JSON, but avoid re-formatting if possible to save tokens
+                // However, error messages are usually small, so formatting them nicely is helpful for humans/agents
                 const errorJson = JSON.parse(result.stdout || result.stderr);
                 return {
                     content: [{
@@ -160,11 +166,14 @@ export async function execJulesJsonForMcp(
 
         // Parse and re-format JSON for clean output
         try {
-            const json = JSON.parse(result.stdout);
+            // Optimization: Validate that output is JSON, but return the original string.
+            // This avoids the CPU cost of re-serialization and the token cost of pretty-printing (if original is minified).
+            JSON.parse(result.stdout);
+
             return {
                 content: [{
                     type: 'text',
-                    text: JSON.stringify(json, null, 2)
+                    text: result.stdout
                 }]
             };
         } catch {
