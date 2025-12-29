@@ -4,6 +4,9 @@
 
 import { spawn } from 'child_process';
 
+// Defined at module scope to prevent memory reallocation on every function call.
+const ALLOWED_ENV_KEYS = ['JULES_API_KEY', 'PATH', 'HOME', 'SSH_AUTH_SOCK', 'LANG', 'LC_ALL'];
+
 export interface CliResult {
     stdout: string;
     stderr: string;
@@ -29,10 +32,9 @@ export async function execJules(
         // Only pass necessary environment variables to the child process
         // to avoid leaking sensitive secrets that jules-ruby doesn't need.
         // Also ensure we don't pass undefined values which would cause spawn to crash.
-        const allowedKeys = ['JULES_API_KEY', 'PATH', 'HOME', 'SSH_AUTH_SOCK', 'LANG', 'LC_ALL'];
         const env: NodeJS.ProcessEnv = {};
 
-        for (const key of allowedKeys) {
+        for (const key of ALLOWED_ENV_KEYS) {
             const value = process.env[key];
             if (value !== undefined) {
                 env[key] = value;
@@ -41,11 +43,14 @@ export async function execJules(
 
         const child = spawn('jules-ruby', finalArgs, {
             cwd,
-            env
+            env,
+            // Optimization: Ignore stdin (since we don't use it) to prevent pipe creation.
+            // Using 'pipe' for stdout/stderr allows us to capture output.
+            stdio: ['ignore', 'pipe', 'pipe']
         });
 
-        let stdout = '';
-        let stderr = '';
+        const stdoutChunks: string[] = [];
+        const stderrChunks: string[] = [];
 
         // Optimization: Set encoding to 'utf8' to handle multi-byte characters correctly
         // and improve performance by avoiding manual string conversion of buffers.
@@ -53,17 +58,17 @@ export async function execJules(
         child.stderr.setEncoding('utf8');
 
         child.stdout.on('data', (data) => {
-            stdout += data;
+            stdoutChunks.push(data);
         });
 
         child.stderr.on('data', (data) => {
-            stderr += data;
+            stderrChunks.push(data);
         });
 
         child.on('close', (code) => {
             resolve({
-                stdout: stdout.trim(),
-                stderr: stderr.trim(),
+                stdout: stdoutChunks.join('').trim(),
+                stderr: stderrChunks.join('').trim(),
                 exitCode: code ?? 0
             });
         });
