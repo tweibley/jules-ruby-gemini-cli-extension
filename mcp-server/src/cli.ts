@@ -4,6 +4,8 @@
 
 import { spawn } from 'child_process';
 
+const ALLOWED_ENV_KEYS = ['JULES_API_KEY', 'PATH', 'HOME', 'SSH_AUTH_SOCK', 'LANG', 'LC_ALL'];
+
 export interface CliResult {
     stdout: string;
     stderr: string;
@@ -29,10 +31,9 @@ export async function execJules(
         // Only pass necessary environment variables to the child process
         // to avoid leaking sensitive secrets that jules-ruby doesn't need.
         // Also ensure we don't pass undefined values which would cause spawn to crash.
-        const allowedKeys = ['JULES_API_KEY', 'PATH', 'HOME', 'SSH_AUTH_SOCK', 'LANG', 'LC_ALL'];
         const env: NodeJS.ProcessEnv = {};
 
-        for (const key of allowedKeys) {
+        for (const key of ALLOWED_ENV_KEYS) {
             const value = process.env[key];
             if (value !== undefined) {
                 env[key] = value;
@@ -44,26 +45,27 @@ export async function execJules(
             env
         });
 
-        let stdout = '';
-        let stderr = '';
+        const stdout: string[] = [];
+        const stderr: string[] = [];
 
         // Optimization: Set encoding to 'utf8' to handle multi-byte characters correctly
         // and improve performance by avoiding manual string conversion of buffers.
         child.stdout.setEncoding('utf8');
         child.stderr.setEncoding('utf8');
 
+        // Optimization: Use array buffering to reduce GC pressure from intermediate string creation
         child.stdout.on('data', (data) => {
-            stdout += data;
+            stdout.push(data);
         });
 
         child.stderr.on('data', (data) => {
-            stderr += data;
+            stderr.push(data);
         });
 
         child.on('close', (code) => {
             resolve({
-                stdout: stdout.trim(),
-                stderr: stderr.trim(),
+                stdout: stdout.join('').trim(),
+                stderr: stderr.join('').trim(),
                 exitCode: code ?? 0
             });
         });
