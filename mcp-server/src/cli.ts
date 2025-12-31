@@ -15,6 +15,9 @@ export interface CliResult {
  * @param args - Arguments to pass to the jules-ruby command
  * @param options - Optional configuration
  */
+// Optimization: specific allowlist to prevent leaking secrets and module-level definition to avoid reallocation.
+const ALLOWED_ENV_KEYS = ['JULES_API_KEY', 'PATH', 'HOME', 'SSH_AUTH_SOCK', 'LANG', 'LC_ALL'];
+
 export async function execJules(
     args: string[],
     options: { cwd?: string; useJson?: boolean } = {}
@@ -29,10 +32,9 @@ export async function execJules(
         // Only pass necessary environment variables to the child process
         // to avoid leaking sensitive secrets that jules-ruby doesn't need.
         // Also ensure we don't pass undefined values which would cause spawn to crash.
-        const allowedKeys = ['JULES_API_KEY', 'PATH', 'HOME', 'SSH_AUTH_SOCK', 'LANG', 'LC_ALL'];
         const env: NodeJS.ProcessEnv = {};
 
-        for (const key of allowedKeys) {
+        for (const key of ALLOWED_ENV_KEYS) {
             const value = process.env[key];
             if (value !== undefined) {
                 env[key] = value;
@@ -158,13 +160,13 @@ export async function execJulesJsonForMcp(
             }
         }
 
-        // Parse and re-format JSON for clean output
+        // Parse to validate JSON, but return original string to avoid re-serialization overhead
         try {
-            const json = JSON.parse(result.stdout);
+            JSON.parse(result.stdout);
             return {
                 content: [{
                     type: 'text',
-                    text: JSON.stringify(json, null, 2)
+                    text: result.stdout
                 }]
             };
         } catch {
