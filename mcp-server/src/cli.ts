@@ -4,6 +4,11 @@
 
 import { spawn } from 'child_process';
 
+// Only pass necessary environment variables to the child process
+// to avoid leaking sensitive secrets that jules-ruby doesn't need.
+// Defined at module scope to avoid reallocation on every call.
+const ALLOWED_ENV_KEYS = ['JULES_API_KEY', 'PATH', 'HOME', 'SSH_AUTH_SOCK', 'LANG', 'LC_ALL'];
+
 export interface CliResult {
     stdout: string;
     stderr: string;
@@ -26,13 +31,10 @@ export async function execJules(
     if (useJson) finalArgs.push('--format=json');
 
     return new Promise((resolve, reject) => {
-        // Only pass necessary environment variables to the child process
-        // to avoid leaking sensitive secrets that jules-ruby doesn't need.
         // Also ensure we don't pass undefined values which would cause spawn to crash.
-        const allowedKeys = ['JULES_API_KEY', 'PATH', 'HOME', 'SSH_AUTH_SOCK', 'LANG', 'LC_ALL'];
         const env: NodeJS.ProcessEnv = {};
 
-        for (const key of allowedKeys) {
+        for (const key of ALLOWED_ENV_KEYS) {
             const value = process.env[key];
             if (value !== undefined) {
                 env[key] = value;
@@ -160,11 +162,13 @@ export async function execJulesJsonForMcp(
 
         // Parse and re-format JSON for clean output
         try {
-            const json = JSON.parse(result.stdout);
+            JSON.parse(result.stdout);
             return {
                 content: [{
                     type: 'text',
-                    text: JSON.stringify(json, null, 2)
+                    // Optimization: Return original JSON string to save re-serialization cost
+                    // and reduce token count for LLM consumption.
+                    text: result.stdout
                 }]
             };
         } catch {

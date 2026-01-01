@@ -1,3 +1,3 @@
-## 2025-12-18 - [Buffer handling in Node.js spawn]
-**Learning:** When handling stdout from spawned processes in Node.js, `stdout.setEncoding('utf8')` is not only safer for multi-byte characters but also significantly faster than manually collecting chunks and converting them (or concatenating strings from buffers) for large outputs in V8.
-**Action:** Always use `setEncoding('utf8')` for text streams from child processes unless raw binary data is explicitly required.
+## 2024-05-23 - JSON Output Optimization
+**Learning:** For MCP servers consumed by LLMs, raw minified JSON is superior to pretty-printed JSON. It reduces token usage for the LLM and saves CPU cycles by avoiding re-serialization.
+**Action:** When implementing MCP tools that return JSON, validate the JSON with `JSON.parse` but return the original string if possible.
