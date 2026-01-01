@@ -2,20 +2,19 @@ description = "Show a summary of all active (non-completed) sessions"
 prompt = """Show a summary of all active jules sessions.
 
 1. Use jules_list_sessions to get all sessions
-2. Filter for sessions that are NOT completed or failed (active states):
-   - QUEUED
-   - PLANNING
-   - AWAITING_PLAN_APPROVAL
-   - AWAITING_USER_FEEDBACK
-   - IN_PROGRESS
+2. Filter for sessions that are NOT completed or failed (active states).
 
-3. Group and summarize by state:
-   - How many are awaiting approval (offer to approve)
-   - How many are in progress (no action needed)
-   - How many need feedback (offer to send message)
+3. Group and summarize by state using these indicators:
+   - ✋ AWAITING_PLAN_APPROVAL (Action needed: Approve)
+   - 💬 AWAITING_USER_FEEDBACK (Action needed: Reply)
+   - 🟢 IN_PROGRESS (Working...)
+   - 💭 PLANNING (Thinking...)
+   - ⚫ QUEUED (Waiting...)
 
 4. For each active session, show:
+   - Status Icon & State
    - Session ID
    - Title
-   - Current state
-   - Suggested next action"""
+   - Suggested next action (e.g., "Use /jules-ruby:approve <ID>")
+
+Make the summary easy to scan."""
