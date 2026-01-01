@@ -1,4 +1,4 @@
-## 2025-12-18 - Argument Injection and Env Leakage
-**Vulnerability:** The MCP server passed unsanitized user inputs to a CLI tool (`jules-ruby`) and leaked all environment variables to the child process.
-**Learning:** Even when using `spawn` to avoid shell injection, argument injection is possible if user inputs can be interpreted as flags (starting with `-`). Also, passing full `process.env` violates least privilege.
-**Prevention:** Validate inputs to ensure they don't start with `-` when used as command arguments. Use an explicit allowlist for environment variables passed to child processes.
+## 2026-01-01 - Input Validation for Sources and Sessions
+**Vulnerability:** The MCP server accepted loosely validated strings for `source` and `session_id` arguments. While `child_process.spawn` prevents direct shell injection, this lack of strict validation could theoretically allow directory traversal characters (e.g., `../../`) or malformed inputs to be passed to the underlying `jules-ruby` CLI, potentially leading to unexpected behavior or path traversal if the CLI tool itself was vulnerable.
+**Learning:** Defense-in-depth requires validating inputs at the earliest possible boundary (the MCP server interface) rather than relying solely on the underlying tool. Regex validation ensures inputs match the expected domain format (`sources/provider/owner/repo` and numeric IDs).
+**Prevention:** Implemented strict Zod refinements with Regex for `source` (matching `sources/provider/owner/repo`), `session_id` (numeric or `sessions/ID`), and `activity_name`.
