@@ -10,6 +10,11 @@ export interface CliResult {
     exitCode: number;
 }
 
+// Only pass necessary environment variables to the child process
+// to avoid leaking sensitive secrets that jules-ruby doesn't need.
+// Also ensure we don't pass undefined values which would cause spawn to crash.
+const ALLOWED_ENV_KEYS = ['JULES_API_KEY', 'PATH', 'HOME', 'SSH_AUTH_SOCK', 'LANG', 'LC_ALL'];
+
 /**
  * Execute a jules-ruby CLI command
  * @param args - Arguments to pass to the jules-ruby command
@@ -26,13 +31,9 @@ export async function execJules(
     if (useJson) finalArgs.push('--format=json');
 
     return new Promise((resolve, reject) => {
-        // Only pass necessary environment variables to the child process
-        // to avoid leaking sensitive secrets that jules-ruby doesn't need.
-        // Also ensure we don't pass undefined values which would cause spawn to crash.
-        const allowedKeys = ['JULES_API_KEY', 'PATH', 'HOME', 'SSH_AUTH_SOCK', 'LANG', 'LC_ALL'];
         const env: NodeJS.ProcessEnv = {};
 
-        for (const key of allowedKeys) {
+        for (const key of ALLOWED_ENV_KEYS) {
             const value = process.env[key];
             if (value !== undefined) {
                 env[key] = value;
@@ -41,7 +42,10 @@ export async function execJules(
 
         const child = spawn('jules-ruby', finalArgs, {
             cwd,
-            env
+            env,
+            // Optimization: Ignore stdin as we don't write to it,
+            // which saves resources (file descriptors/pipes).
+            stdio: ['ignore', 'pipe', 'pipe']
         });
 
         let stdout = '';
@@ -150,6 +154,7 @@ export async function execJulesJsonForMcp(
                 return {
                     content: [{
                         type: 'text',
+                        // For errors, we likely still want readable output for debugging
                         text: JSON.stringify(errorJson, null, 2)
                     }]
                 };
@@ -158,13 +163,17 @@ export async function execJulesJsonForMcp(
             }
         }
 
-        // Parse and re-format JSON for clean output
+        // Validate JSON but avoid re-serialization overhead
         try {
-            const json = JSON.parse(result.stdout);
+            JSON.parse(result.stdout);
+            // Optimization: Return the original string directly.
+            // 1. Saves CPU time (no stringify).
+            // 2. Reduces response size (no extra whitespace/newlines if original was minified).
+            // 3. Reduces memory churn.
             return {
                 content: [{
                     type: 'text',
-                    text: JSON.stringify(json, null, 2)
+                    text: result.stdout
                 }]
             };
         } catch {
