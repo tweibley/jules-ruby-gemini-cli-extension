@@ -1,4 +1,4 @@
-## 2025-12-18 - Argument Injection and Env Leakage
-**Vulnerability:** The MCP server passed unsanitized user inputs to a CLI tool (`jules-ruby`) and leaked all environment variables to the child process.
-**Learning:** Even when using `spawn` to avoid shell injection, argument injection is possible if user inputs can be interpreted as flags (starting with `-`). Also, passing full `process.env` violates least privilege.
-**Prevention:** Validate inputs to ensure they don't start with `-` when used as command arguments. Use an explicit allowlist for environment variables passed to child processes.
+## 2025-01-26 - [DoS Prevention via Input Length Limits]
+**Vulnerability:** The MCP server lacked input length validation on user-controlled strings (prompts, session IDs, etc.), potentially allowing Denial of Service (DoS) via resource exhaustion or buffer overflows.
+**Learning:** Zod's `.refine()` returns a `ZodEffects` object which hides underlying type methods. Order matters: `z.string().max(N).refine(...)` works, but `z.string().refine(...).max(N)` throws a TypeError at runtime.
+**Prevention:** Always place type-specific validators (like `.max()`, `.email()`) before generic `.refine()` calls. Enforce explicit length limits on all user inputs exposed to external processes.
