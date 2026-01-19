@@ -1,3 +1,7 @@
-## 2025-12-18 - [Buffer handling in Node.js spawn]
-**Learning:** When handling stdout from spawned processes in Node.js, `stdout.setEncoding('utf8')` is not only safer for multi-byte characters but also significantly faster than manually collecting chunks and converting them (or concatenating strings from buffers) for large outputs in V8.
-**Action:** Always use `setEncoding('utf8')` for text streams from child processes unless raw binary data is explicitly required.
+## 2024-05-22 - [String Concatenation vs Array Join]
+**Learning:** In V8 (Node.js), `string += chunk` is significantly faster (orders of magnitude) than collecting chunks in an array and joining them (`arr.push(chunk); arr.join('')`) for large text streams. This is due to V8's "rope" string optimization.
+**Action:** Prefer string concatenation for accumulating text output from child processes or streams.
+
+## 2024-05-22 - [Child Process Stdio]
+**Learning:** Using `stdio: ['ignore', 'pipe', 'pipe']` when spawning child processes that don't need stdin input saves a file descriptor and prevents potential hanging if the child process accidentally reads from stdin.
+**Action:** Always set `stdin` to 'ignore' for non-interactive child processes.
