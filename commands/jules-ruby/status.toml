@@ -3,11 +3,11 @@ prompt = """Show a summary of all active jules sessions.
 
 1. Use jules_list_sessions to get all sessions
 2. Filter for sessions that are NOT completed or failed (active states):
-   - QUEUED
-   - PLANNING
-   - AWAITING_PLAN_APPROVAL
-   - AWAITING_USER_FEEDBACK
-   - IN_PROGRESS
+   - ⚪ QUEUED
+   - 💭 PLANNING
+   - ✋ AWAITING_PLAN_APPROVAL
+   - 💬 AWAITING_USER_FEEDBACK
+   - 🟢 IN_PROGRESS
 
 3. Group and summarize by state:
    - How many are awaiting approval (offer to approve)
@@ -17,5 +17,5 @@ prompt = """Show a summary of all active jules sessions.
 4. For each active session, show:
    - Session ID
    - Title
-   - Current state
+   - Current state (with emoji)
    - Suggested next action"""
