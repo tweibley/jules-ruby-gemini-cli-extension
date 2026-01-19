@@ -4,6 +4,9 @@
 
 import { spawn } from 'child_process';
 
+// Defined at module scope to prevent memory reallocation on every function call
+const ALLOWED_ENV_KEYS = ['JULES_API_KEY', 'PATH', 'HOME', 'SSH_AUTH_SOCK', 'LANG', 'LC_ALL'];
+
 export interface CliResult {
     stdout: string;
     stderr: string;
@@ -29,10 +32,9 @@ export async function execJules(
         // Only pass necessary environment variables to the child process
         // to avoid leaking sensitive secrets that jules-ruby doesn't need.
         // Also ensure we don't pass undefined values which would cause spawn to crash.
-        const allowedKeys = ['JULES_API_KEY', 'PATH', 'HOME', 'SSH_AUTH_SOCK', 'LANG', 'LC_ALL'];
         const env: NodeJS.ProcessEnv = {};
 
-        for (const key of allowedKeys) {
+        for (const key of ALLOWED_ENV_KEYS) {
             const value = process.env[key];
             if (value !== undefined) {
                 env[key] = value;
@@ -158,13 +160,13 @@ export async function execJulesJsonForMcp(
             }
         }
 
-        // Parse and re-format JSON for clean output
+        // Validate JSON but return original output to avoid re-serialization cost
         try {
-            const json = JSON.parse(result.stdout);
+            JSON.parse(result.stdout);
             return {
                 content: [{
                     type: 'text',
-                    text: JSON.stringify(json, null, 2)
+                    text: result.stdout
                 }]
             };
         } catch {
