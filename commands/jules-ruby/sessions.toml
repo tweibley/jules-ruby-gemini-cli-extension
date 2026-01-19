@@ -2,13 +2,13 @@ description = "List all jules sessions"
 prompt = """List all my jules sessions.
 Use the jules_list_sessions tool.
 
-Session states:
-- QUEUED: Waiting to start
-- PLANNING: Creating a plan
-- AWAITING_PLAN_APPROVAL: Plan ready, needs approval (use /jules-ruby:approve)
-- AWAITING_USER_FEEDBACK: Waiting for your input (use /jules-ruby:message)
-- IN_PROGRESS: Working on the task
-- COMPLETED: Finished, PR should be ready
-- FAILED: Something went wrong
+When displaying sessions, use these state indicators:
+- ⚪ QUEUED: Waiting to start
+- 💬 PLANNING: Creating a plan
+- ✋ AWAITING_PLAN_APPROVAL: Plan ready, needs approval (use /jules-ruby:approve)
+- 🗣️ AWAITING_USER_FEEDBACK: Waiting for your input (use /jules-ruby:message)
+- 🟢 IN_PROGRESS: Working on the task
+- ✅ COMPLETED: Finished, PR should be ready
+- ❌ FAILED: Something went wrong
 
 To see details of a specific session, use `/jules-ruby:session <ID>`."""
