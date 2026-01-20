@@ -17,13 +17,12 @@ export interface CliResult {
  */
 export async function execJules(
     args: string[],
-    options: { cwd?: string; useJson?: boolean } = {}
+    options: { cwd?: string; useJson?: boolean; trimOutput?: boolean } = {}
 ): Promise<CliResult> {
-    const { cwd, useJson = false } = options;
+    const { cwd, useJson = false, trimOutput = true } = options;
 
     // Build args with optional json format
-    let finalArgs = [...args];
-    if (useJson) finalArgs.push('--format=json');
+    const finalArgs = useJson ? [...args, '--format=json'] : [...args];
 
     return new Promise((resolve, reject) => {
         // Only pass necessary environment variables to the child process
@@ -61,9 +60,11 @@ export async function execJules(
         });
 
         child.on('close', (code) => {
+            // Optimization: Skip trim() if not requested to avoid copying large strings
+            // especially when the output will be parsed as JSON anyway.
             resolve({
-                stdout: stdout.trim(),
-                stderr: stderr.trim(),
+                stdout: trimOutput ? stdout.trim() : stdout,
+                stderr: trimOutput ? stderr.trim() : stderr,
                 exitCode: code ?? 0
             });
         });
@@ -141,7 +142,9 @@ export async function execJulesJsonForMcp(
     options: { cwd?: string } = {}
 ): Promise<{ content: Array<{ type: 'text'; text: string }> }> {
     try {
-        const result = await execJules(args, { ...options, useJson: true });
+        // Optimization: Disable trimOutput for JSON since JSON.parse ignores whitespace
+        // and trimming large JSON strings triggers unnecessary memory copying/GC.
+        const result = await execJules(args, { ...options, useJson: true, trimOutput: false });
 
         if (result.exitCode !== 0) {
             // Try to parse error as JSON first
