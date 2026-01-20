@@ -2,7 +2,16 @@ description = "Show details of a specific session"
 prompt = """Show details for jules session '{{args}}'.
 Use the jules_show_session tool with session_id='{{args}}'.
 
+Display the session state with its icon:
+- ⚪ QUEUED
+- 💬 PLANNING
+- ✋ AWAITING_PLAN_APPROVAL
+- 🗣️ AWAITING_USER_FEEDBACK
+- 🟢 IN_PROGRESS
+- ✅ COMPLETED
+- ❌ FAILED
+
 After viewing session details:
-- If AWAITING_PLAN_APPROVAL: Ask if user wants to approve with /jules-ruby:approve
-- If AWAITING_USER_FEEDBACK: Ask if user wants to send a message with /jules-ruby:message
+- If ✋ AWAITING_PLAN_APPROVAL: Ask if user wants to approve with /jules-ruby:approve
+- If 🗣️ AWAITING_USER_FEEDBACK: Ask if user wants to send a message with /jules-ruby:message
 - To see activity history: Use /jules-ruby:activities {{args}}"""
