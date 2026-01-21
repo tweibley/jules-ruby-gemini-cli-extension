@@ -36,24 +36,24 @@ When the user asks about existing tasks:
 
 1.  **List Sessions:**
     *   Use `jules_list_sessions` to show all sessions.
-    *   Sessions have states: QUEUED, PLANNING, AWAITING_PLAN_APPROVAL, IN_PROGRESS, COMPLETED, FAILED.
+    *   Sessions have states: ⚫ QUEUED, 💬 PLANNING, ✋ AWAITING_PLAN_APPROVAL, 🗣️ AWAITING_USER_FEEDBACK, 🟢 IN_PROGRESS, ✅ COMPLETED, ❌ FAILED.
 
 2.  **Show Session Details:**
     *   Use `jules_show_session` to get full details of a specific session.
     *   Use `jules_list_activities` to see progress history.
 
 3.  **Handle Session States:**
-    *   **AWAITING_PLAN_APPROVAL**: Ask user if they want to approve the plan using `jules_approve_plan`.
-    *   **AWAITING_USER_FEEDBACK**: Use `jules_send_message` to send additional instructions.
-    *   **COMPLETED**: Inform user the PR should be ready on GitHub.
-    *   **FAILED**: Show the failure reason from activities.
+    *   **✋ AWAITING_PLAN_APPROVAL**: Ask user if they want to approve the plan using `jules_approve_plan`.
+    *   **🗣️ AWAITING_USER_FEEDBACK**: Use `jules_send_message` to send additional instructions.
+    *   **✅ COMPLETED**: Inform user the PR should be ready on GitHub.
+    *   **❌ FAILED**: Show the failure reason from activities.
 
 ---
 
 ### **Workflow 3: Interacting with Active Sessions**
 
 1.  **Approve a Plan:**
-    *   When session state is AWAITING_PLAN_APPROVAL, use `jules_approve_plan` with the session ID.
+    *   When session state is ✋ AWAITING_PLAN_APPROVAL, use `jules_approve_plan` with the session ID.
 
 2.  **Send Additional Instructions:**
     *   Use `jules_send_message` to send follow-up instructions.
