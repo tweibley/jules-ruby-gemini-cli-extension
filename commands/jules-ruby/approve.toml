@@ -1,4 +1,4 @@
-description = "Approve a session's plan (use when state is AWAITING_PLAN_APPROVAL)"
+description = "Approve a session's plan (use when state is ✋ AWAITING_PLAN_APPROVAL)"
 prompt = """Approve the plan for jules session '{{args}}'.
 Use the jules_approve_plan tool with session_id='{{args}}'.
 

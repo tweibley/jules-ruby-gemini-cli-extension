@@ -2,7 +2,7 @@ description = "Find all sessions waiting for plan approval and show a summary"
 prompt = """Find all jules sessions that need plan approval.
 
 1. Use jules_list_sessions to get all sessions
-2. Filter for sessions with state AWAITING_PLAN_APPROVAL
+2. Filter for sessions with state ✋ AWAITING_PLAN_APPROVAL
 3. For each one, summarize:
    - Session ID
    - Title (if available)
