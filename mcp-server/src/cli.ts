@@ -17,9 +17,9 @@ export interface CliResult {
  */
 export async function execJules(
     args: string[],
-    options: { cwd?: string; useJson?: boolean } = {}
+    options: { cwd?: string; useJson?: boolean; trimOutput?: boolean } = {}
 ): Promise<CliResult> {
-    const { cwd, useJson = false } = options;
+    const { cwd, useJson = false, trimOutput = true } = options;
 
     // Build args with optional json format
     let finalArgs = [...args];
@@ -62,8 +62,9 @@ export async function execJules(
 
         child.on('close', (code) => {
             resolve({
-                stdout: stdout.trim(),
-                stderr: stderr.trim(),
+                // Optimization: Skip trimming if requested (e.g. for JSON parsing) to avoid unnecessary string allocation
+                stdout: trimOutput ? stdout.trim() : stdout,
+                stderr: trimOutput ? stderr.trim() : stderr,
                 exitCode: code ?? 0
             });
         });
@@ -141,7 +142,7 @@ export async function execJulesJsonForMcp(
     options: { cwd?: string } = {}
 ): Promise<{ content: Array<{ type: 'text'; text: string }> }> {
     try {
-        const result = await execJules(args, { ...options, useJson: true });
+        const result = await execJules(args, { ...options, useJson: true, trimOutput: false });
 
         if (result.exitCode !== 0) {
             // Try to parse error as JSON first
