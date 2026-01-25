@@ -10,6 +10,9 @@ export interface CliResult {
     exitCode: number;
 }
 
+// Optimization: Define allowed environment keys once to avoid reallocation
+const ALLOWED_ENV_KEYS = ['JULES_API_KEY', 'PATH', 'HOME', 'SSH_AUTH_SOCK', 'LANG', 'LC_ALL'];
+
 /**
  * Execute a jules-ruby CLI command
  * @param args - Arguments to pass to the jules-ruby command
@@ -17,9 +20,9 @@ export interface CliResult {
  */
 export async function execJules(
     args: string[],
-    options: { cwd?: string; useJson?: boolean } = {}
+    options: { cwd?: string; useJson?: boolean; trimOutput?: boolean } = {}
 ): Promise<CliResult> {
-    const { cwd, useJson = false } = options;
+    const { cwd, useJson = false, trimOutput = true } = options;
 
     // Build args with optional json format
     let finalArgs = [...args];
@@ -29,10 +32,9 @@ export async function execJules(
         // Only pass necessary environment variables to the child process
         // to avoid leaking sensitive secrets that jules-ruby doesn't need.
         // Also ensure we don't pass undefined values which would cause spawn to crash.
-        const allowedKeys = ['JULES_API_KEY', 'PATH', 'HOME', 'SSH_AUTH_SOCK', 'LANG', 'LC_ALL'];
         const env: NodeJS.ProcessEnv = {};
 
-        for (const key of allowedKeys) {
+        for (const key of ALLOWED_ENV_KEYS) {
             const value = process.env[key];
             if (value !== undefined) {
                 env[key] = value;
@@ -62,8 +64,8 @@ export async function execJules(
 
         child.on('close', (code) => {
             resolve({
-                stdout: stdout.trim(),
-                stderr: stderr.trim(),
+                stdout: trimOutput ? stdout.trim() : stdout,
+                stderr: trimOutput ? stderr.trim() : stderr,
                 exitCode: code ?? 0
             });
         });
@@ -141,7 +143,8 @@ export async function execJulesJsonForMcp(
     options: { cwd?: string } = {}
 ): Promise<{ content: Array<{ type: 'text'; text: string }> }> {
     try {
-        const result = await execJules(args, { ...options, useJson: true });
+        // Optimization: Skip trimming output since JSON.parse ignores whitespace
+        const result = await execJules(args, { ...options, useJson: true, trimOutput: false });
 
         if (result.exitCode !== 0) {
             // Try to parse error as JSON first
