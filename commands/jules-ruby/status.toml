@@ -17,5 +17,5 @@ prompt = """Show a summary of all active jules sessions.
 4. For each active session, show:
    - Session ID
    - Title
-   - Current state
+   - Current state (use the corresponding emoji from session states)
    - Suggested next action"""
