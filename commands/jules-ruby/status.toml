@@ -17,5 +17,10 @@ prompt = """Show a summary of all active jules sessions.
 4. For each active session, show:
    - Session ID
    - Title
-   - Current state
+   - Current state (use these visual anchors):
+     * QUEUED ⚫
+     * PLANNING 💬
+     * AWAITING_PLAN_APPROVAL ✋
+     * AWAITING_USER_FEEDBACK 🗣️
+     * IN_PROGRESS 🟢
    - Suggested next action"""

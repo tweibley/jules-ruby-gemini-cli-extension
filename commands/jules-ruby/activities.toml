@@ -3,10 +3,10 @@ prompt = """List activities for jules session '{{args}}'.
 Use the jules_list_activities tool with session_id='{{args}}'.
 
 Activity types:
-- agent_message: jules posted a status update
-- user_message: You sent a message
-- plan_generated: jules created a plan (review and approve with /jules-ruby:approve)
-- plan_approved: You approved the plan
-- progress_update: Work in progress update
-- session_completed: Task finished successfully
-- session_failed: Something went wrong (check failure reason)"""
+- agent_message 🤖: jules posted a status update
+- user_message 👤: You sent a message
+- plan_generated 📋: jules created a plan (review and approve with /jules-ruby:approve)
+- plan_approved 👍: You approved the plan
+- progress_update 🚧: Work in progress update
+- session_completed ✅: Task finished successfully
+- session_failed ❌: Something went wrong (check failure reason)"""
