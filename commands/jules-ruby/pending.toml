@@ -7,6 +7,7 @@ prompt = """Find all jules sessions that need plan approval.
    - Session ID
    - Title (if available)
    - Repository/source
+   - State: ✋ AWAITING_PLAN_APPROVAL
    - When it was created
 
 If there are sessions awaiting approval, ask if the user wants to:
